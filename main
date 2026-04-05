@@ -1,0 +1,54 @@
+import requests
+rate = 52.34
+def convert_price(price):
+    global rate
+    url = 'https://api.frankfurter.dev/v2/latest?base=USD'
+    try:
+        response = requests.get(url)
+        data = response.json()
+        if 'rates' in data:
+            rate = data['rates']['EGP']
+    except requests.exceptions.ConnectionError:
+        print('------Connection failed. Using old rate------')
+
+    return price * rate
+def get_price(weight_gram):
+    api_key = 'YOUR-API-KEY-HERE'
+    symbol = 'XAU'
+    curr = 'USD'
+    url = f"https://www.goldapi.io/api/{symbol}/{curr}"
+    headers = {
+       "x-access-token": api_key,
+        "Content-Type": "application/json"}
+    try:
+        response = requests.get(url, headers=headers)
+        data = response.json()
+        if 'price_gram_24k' in data:
+            price_gram = data['price_gram_24k'] * weight_gram
+
+            total_price = price_gram
+            return total_price
+        else:
+            return f'API Error: {data}'
+    except Exception as e:
+        return f'Error: {e}'
+
+while True:
+    try:
+        grams = float(input('How many grams of gold would you like to know the price of? (q to quit) '))
+        currency = input('What currency would you like to use (USD-EGP)? ').upper()
+        value = get_price(grams)
+        if isinstance(value, str):
+            print(value)
+            continue
+        if currency == 'q':
+            break
+        elif currency == 'USD':
+            print(f'The price of {grams:.2f}g is ${value:.2f}')
+        elif currency == 'EGP':
+            value = convert_price(value)
+            print(f'The price of {grams:.2f}g is L.E {value:.2f}')
+        else:
+            print('Please enter a valid currency')
+    except ValueError:
+        print('Please enter a numeric value')
