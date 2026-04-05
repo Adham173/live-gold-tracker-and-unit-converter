@@ -41,9 +41,9 @@ while True:
         if isinstance(value, str):
             print(value)
             continue
-        if currency == 'q':
+        if grams == 'q':
             break
-        elif currency == 'USD':
+        if currency == 'USD':
             print(f'The price of {grams:.2f}g is ${value:.2f}')
         elif currency == 'EGP':
             value = convert_price(value)
